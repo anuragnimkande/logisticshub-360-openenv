@@ -4,16 +4,19 @@ Hugging Face Spaces-compatible demo with two modes:
   1. AI Agent Mode  — watch an LLM solve logistics tasks in real-time
   2. Human Mode     — play as the agent and compete against the AI score
 """
-
 from __future__ import annotations
 
-import json
-import os
 import sys
-import time
-from typing import Any, Dict, Generator, List, Optional, Tuple
+import os
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+import json
+import time
 import gradio as gr
+
+from env.environment import LogisticsHub360Env
+from typing import Any, Dict, Generator, List, Optional, Tuple
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
