@@ -221,8 +221,24 @@ print('✅ Environment validated successfully')
 print(f'   Task: {obs.task_id}')
 print(f'   Max Steps: {obs.max_steps}')
 print(f'   Tools: {obs.available_tools}')
-"
 ```
+
+### Running the Interactive Web App (Gradio)
+
+LogisticsHub-360 includes a rich interactive web UI where you can play as the agent in Human Mode, or watch the AI solve tasks in AI Agent Mode.
+
+```bash
+# Set your HF token (Required for AI Agent Mode)
+export HF_TOKEN="your_token_here" # On Windows PowerShell: $env:HF_TOKEN="your_token_here"
+
+# Start the web app
+python app.py
+
+# To specify a different port (default is 7860)
+PORT=7865 python app.py  # On Windows PowerShell: $env:PORT="7865"; python app.py
+```
+
+Open `http://127.0.0.1:7860` (or your chosen port) in your browser to view the interface.
 
 ### Running the Baseline Agent
 
