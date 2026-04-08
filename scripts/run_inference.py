@@ -136,11 +136,15 @@ def call_llm(
             content = response.choices[0].message.content
             return content.strip() if content else None
         except Exception as exc:
+            err_str = str(exc)
+            # Rate limited — wait longer
+            wait = 5.0 * attempt if "402" in err_str or "429" in err_str else 2.0 * attempt
             logger.warning(
-                f"[LLM] API call failed (attempt {attempt}/{retries}): {exc}"
+                f"[LLM] API call failed (attempt {attempt}/{retries}): {exc}. "
+                f"Retrying in {wait:.0f}s..."
             )
             if attempt < retries:
-                time.sleep(2.0 * attempt)
+                time.sleep(wait)
     return None
 
 
@@ -336,7 +340,10 @@ def run_all_tasks(
     for task_id in TASK_ORDER:
         result = run_task(client, task_id, verbose=verbose)
         all_results.append(result)
-        time.sleep(1.0)  # Rate handling
+        if task_id != TASK_ORDER[-1]:
+            inter_task_sleep = 8.0  # Respect HF free-tier rate limits between tasks
+            logger.info(f"[RUN] Sleeping {inter_task_sleep}s between tasks to respect rate limits...")
+            time.sleep(inter_task_sleep)
 
     return all_results
 
