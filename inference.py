@@ -53,6 +53,7 @@ MODEL_NAME = os.getenv(
     "MODEL_NAME",
     "Qwen/Qwen2.5-72B-Instruct",
 )
+LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME")
 MAX_RETRIES = int(os.environ.get("LH360_MAX_RETRIES", "3"))
 TEMPERATURE = float(os.environ.get("LH360_TEMPERATURE", "0.2"))
 MAX_TOKENS = 512
@@ -230,19 +231,12 @@ def run_task(
     done = False
 
     if verbose:
-        print(f"\n{'='*70}")
-        print(f"  TASK: {task_id.upper()} | Difficulty: {obs.difficulty}")
-        print(f"{'='*70}")
-        print(f"  Description: {obs.task_description[:200]}...")
-        print()
+        print(f"START: Task={task_id} Difficulty={obs.difficulty}")
 
     while not done:
         # Build prompt for this step
         user_prompt = observation_to_prompt(obs)
         messages.append({"role": "user", "content": user_prompt})
-
-        if verbose:
-            print(f"  [Step {obs.step_count + 1}/{obs.max_steps}]", end=" ")
 
         # Get LLM action
         raw_response = call_llm(client, messages)
@@ -262,9 +256,6 @@ def run_task(
             })
             continue
 
-        if verbose:
-            print(f"Tool: {action.tool} | Params: {action.parameters}")
-
         # Execute action
         obs, reward, done, info = env.step(action)
         cumulative_reward += reward
@@ -283,12 +274,7 @@ def run_task(
         step_logs.append(step_log)
 
         if verbose:
-            explanation = info.get("explanation", "")
-            print(
-                f"         → Reward: {reward:+.3f} | Cumulative: {cumulative_reward:+.3f}"
-            )
-            if explanation:
-                print(f"         → {explanation[:100]}")
+            print(f"STEP: {action.tool} | Params: {action.parameters} | Reward: {reward:+.3f}")
 
         if done:
             break
@@ -297,12 +283,7 @@ def run_task(
     final_grade = grade_episode(env, task_id)
 
     if verbose:
-        print()
-        print(f"  [DONE] Task '{task_id}' complete.")
-        print(f"     Cumulative Reward : {cumulative_reward:.4f}")
-        print(f"     Final Grade       : {final_grade:.4f} / 1.0")
-        print(f"     Steps Used        : {obs.step_count} / {obs.max_steps}")
-        print(f"     Customer Sentiment: {obs.customer_sentiment:.2f}")
+        print(f"END: Task='{task_id}' | Grade={final_grade:.4f}")
 
     return {
         "task_id": task_id,
