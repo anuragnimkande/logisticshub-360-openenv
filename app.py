@@ -634,17 +634,51 @@ def build_app() -> gr.Blocks:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    from fastapi import FastAPI, Request
+    from fastapi.responses import JSONResponse
+    import uvicorn
+
+    fastapi_app = FastAPI()
+    _api_env = None
+
+    @fastapi_app.post("/reset")
+    async def api_reset(request: Request):
+        global _api_env
+        try:
+            data = await request.json()
+        except:
+            data = {}
+        task_id = data.get("task_id", "order_tracking")
+        _api_env = LogisticsHub360Env(task_id=task_id)
+        obs = _api_env.reset()
+        return obs.model_dump()
+
+    @fastapi_app.post("/step")
+    async def api_step(action: Action):
+        global _api_env
+        if not _api_env:
+            _api_env = LogisticsHub360Env(task_id="order_tracking")
+            _api_env.reset()
+        obs, reward, done, info = _api_env.step(action)
+        return {
+            "observation": obs.model_dump(),
+            "reward": reward,
+            "done": done,
+            "info": info
+        }
+
+    @fastapi_app.get("/state")
+    async def api_state():
+        if _api_env:
+            return _api_env.state()
+        return {}
+        
+    @fastapi_app.post("/state")
+    async def api_state_post():
+        if _api_env:
+            return _api_env.state()
+        return {}
+
     app = build_app()
-    app.launch(
-        server_name=os.environ.get("HOST", "127.0.0.1"),
-        server_port=int(os.environ.get("PORT", 7860)),
-        share=False,
-        show_error=True,
-        theme=gr.themes.Soft(
-            primary_hue="blue",
-            secondary_hue="slate",
-            neutral_hue="slate",
-            font=gr.themes.GoogleFont("Inter"),
-        ),
-        css=CUSTOM_CSS,
-    )
+    gr.mount_gradio_app(fastapi_app, app, path="/")
+    uvicorn.run(fastapi_app, host=os.environ.get("HOST", "0.0.0.0"), port=int(os.environ.get("PORT", 7860)))
