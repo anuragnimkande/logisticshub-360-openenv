@@ -635,7 +635,6 @@ def build_app() -> gr.Blocks:
 
 if __name__ == "__main__":
     from fastapi import FastAPI, Request
-    from fastapi.responses import JSONResponse
     import uvicorn
 
     fastapi_app = FastAPI()
@@ -672,13 +671,16 @@ if __name__ == "__main__":
         if _api_env:
             return _api_env.state()
         return {}
-        
+
     @fastapi_app.post("/state")
     async def api_state_post():
         if _api_env:
             return _api_env.state()
         return {}
 
+    # Mount Gradio UI
     app = build_app()
     gr.mount_gradio_app(fastapi_app, app, path="/")
-    uvicorn.run(fastapi_app, host=os.environ.get("HOST", "0.0.0.0"), port=int(os.environ.get("PORT", 7860)))
+
+    # Run server (IMPORTANT FIXED PORT)
+    uvicorn.run(fastapi_app, host="0.0.0.0", port=7860)

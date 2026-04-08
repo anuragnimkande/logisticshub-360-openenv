@@ -1,3 +1,33 @@
+---
+title: LogisticsHub-360
+emoji: 📦
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: "5.0.0"
+python_version: "3.11"
+app_file: app.py
+pinned: false
+fullWidth: true
+short_description: AI benchmarking for real-world logistics ops
+tags:
+  - openenv
+  - logistics
+  - ecommerce
+  - ai-agent
+  - benchmark
+  - reinforcement-learning
+models:
+  - mistralai/Mistral-7B-Instruct-v0.3
+  - meta-llama/Llama-3.1-8B-Instruct
+disable_embedding: false
+---
+
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+
+
+
 # LogisticsHub-360: Intelligent E-Commerce Operations Environment
 
 [![OpenEnv Compatible](https://img.shields.io/badge/OpenEnv-1.0-blue.svg)](https://openenv.ai)
