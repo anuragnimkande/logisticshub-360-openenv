@@ -1,7 +1,6 @@
-gradio>=4.44.0,<5.0.0
+gradio>=4.44.0
 fastapi
 uvicorn
 pydantic>=2.5.0
 openai>=1.14.0
 pyyaml>=6.0.1
-huggingface-hub<0.26.0
