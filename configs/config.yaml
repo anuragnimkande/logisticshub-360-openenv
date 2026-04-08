@@ -48,8 +48,8 @@ loop_detection:
   threshold: 3
 
 inference:
-  model: "mistralai/Mistral-7B-Instruct-v0.3"
-  base_url: "https://api-inference.huggingface.co/v1"
+  model: "Qwen/Qwen2.5-72B-Instruct"
+  base_url: "https://router.huggingface.co/v1"
   temperature: 0.2
   max_tokens: 512
   max_retries: 3

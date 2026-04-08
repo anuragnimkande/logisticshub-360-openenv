@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env_local/
+.env
+
+# Secrets & credentials — NEVER commit these
+.env.local
+.env.*.local
+secrets.yaml
+*.token
+
+# IDE & editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test & coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+*.xml
+*.log
+
+# Output files
+results.json
+results_*.json
+*.jsonl
+
+# Docker
+.dockerignore
+
+# Jupyter (if ever used)
+.ipynb_checkpoints/

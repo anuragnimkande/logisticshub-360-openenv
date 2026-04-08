@@ -47,11 +47,11 @@ logger = logging.getLogger("logisticshub360.inference")
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
 BASE_URL = os.environ.get(
     "LH360_BASE_URL",
-    "https://api-inference.huggingface.co/v1",
+    "https://router.huggingface.co/v1",
 )
 MODEL_ID = os.environ.get(
     "LH360_MODEL",
-    "mistralai/Mistral-7B-Instruct-v0.3",
+    "Qwen/Qwen2.5-72B-Instruct",
 )
 MAX_RETRIES = int(os.environ.get("LH360_MAX_RETRIES", "3"))
 TEMPERATURE = float(os.environ.get("LH360_TEMPERATURE", "0.2"))
@@ -294,7 +294,7 @@ def run_task(
 
     if verbose:
         print()
-        print(f"  ✅ Task '{task_id}' complete.")
+        print(f"  [DONE] Task '{task_id}' complete.")
         print(f"     Cumulative Reward : {cumulative_reward:.4f}")
         print(f"     Final Grade       : {final_grade:.4f} / 1.0")
         print(f"     Steps Used        : {obs.step_count} / {obs.max_steps}")
