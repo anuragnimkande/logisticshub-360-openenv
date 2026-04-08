@@ -50,3 +50,6 @@ results_*.json
 
 # Jupyter (if ever used)
 .ipynb_checkpoints/
+
+!env/
+!env/**
