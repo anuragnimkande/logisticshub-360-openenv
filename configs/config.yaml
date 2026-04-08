@@ -1,0 +1,64 @@
+# LogisticsHub-360 Configuration
+# Adjust these values to control task difficulty, model behavior, and evaluation settings.
+
+environment:
+  name: "logisticshub-360"
+  version: "1.0.0"
+  description: >
+    Intelligent E-Commerce Operations Environment for evaluating AI agent
+    reasoning, decision-making, and logistics workflow management.
+
+tasks:
+  order_tracking:
+    enabled: true
+    max_steps: 8
+    difficulty: easy
+    reward_scaling: 1.0
+
+  shipment_rerouting:
+    enabled: true
+    max_steps: 15
+    difficulty: medium
+    reward_scaling: 1.0
+
+  stockout_crisis:
+    enabled: true
+    max_steps: 20
+    difficulty: hard
+    reward_scaling: 1.0
+
+rewards:
+  correct_tool_use: 0.30
+  correct_sequence: 0.20
+  partial_progress: 0.10
+  completion_bonus: 1.00
+  penalty_invalid: -0.10
+  penalty_repeated: -0.30
+  penalty_wrong_decision: -0.50
+  penalty_destructive: -1.00
+  efficiency_max_bonus: 0.30
+  sentiment_threshold_high: 0.80
+  sentiment_threshold_mid: 0.60
+  sentiment_bonus_high: 0.10
+  sentiment_bonus_mid: 0.05
+
+loop_detection:
+  enabled: true
+  window_size: 6
+  threshold: 3
+
+inference:
+  model: "mistralai/Mistral-7B-Instruct-v0.3"
+  base_url: "https://api-inference.huggingface.co/v1"
+  temperature: 0.2
+  max_tokens: 512
+  max_retries: 3
+
+logging:
+  level: INFO
+  format: "%(asctime)s [%(levelname)s] %(name)s — %(message)s"
+
+grading:
+  correctness_weight: 0.40
+  efficiency_weight: 0.30
+  decision_quality_weight: 0.30

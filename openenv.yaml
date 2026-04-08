@@ -1,0 +1,133 @@
+# OpenEnv Specification Manifest
+# LogisticsHub-360: Intelligent E-Commerce Operations Environment
+# Complies with the OpenEnv open evaluation standard.
+
+name: logisticshub-360
+version: "1.0.0"
+description: >
+  A production-grade AI evaluation environment simulating real-world e-commerce
+  logistics workflows. Agents manage delivery tracking, shipment rerouting, and
+  stockout crisis resolution across three difficulty levels.
+
+author: "LogisticsHub-360 Team"
+license: "MIT"
+
+environment:
+  entry_point: "env.environment:LogisticsHub360Env"
+  factory: "env.environment:make_env"
+  interface_version: "openenv-1.0"
+
+  methods:
+    reset:
+      returns: "env.models.Observation"
+      description: "Initialize a task scenario and return the first observation."
+    step:
+      accepts: "env.models.Action"
+      returns: "(env.models.Observation, float, bool, dict)"
+      description: "Execute one agent action. Returns (obs, reward, done, info)."
+    state:
+      returns: "dict"
+      description: "Return full internal debug state (not exposed to agent)."
+
+tasks:
+  - id: "order_tracking"
+    difficulty: "easy"
+    max_steps: 8
+    description: "Retrieve order tracking status and notify customer via CRM."
+
+  - id: "shipment_rerouting"
+    difficulty: "medium"
+    max_steps: 15
+    description: "Detect delay, find alternate warehouse, reroute shipment, update CRM."
+
+  - id: "stockout_crisis"
+    difficulty: "hard"
+    max_steps: 20
+    description: "Handle full stockout: decide between reroute/refund, update CRM."
+
+observation_space:
+  type: "structured"
+  schema: "env.models.Observation"
+  fields:
+    - task_id: string
+    - task_description: string
+    - difficulty: enum[easy, medium, hard]
+    - system_logs: list[string]
+    - order_status: OrderInfo
+    - inventory_state: InventoryInfo
+    - customer_sentiment: float[0.0, 1.0]
+    - available_tools: list[string]
+    - action_history: list[ActionHistoryEntry]
+    - hints: list[string]
+    - constraints: list[string]
+    - step_count: int
+    - max_steps: int
+    - is_done: bool
+    - last_reward: float | null
+
+action_space:
+  type: "structured"
+  schema: "env.models.Action"
+  fields:
+    - tool: enum[get_tracking, check_inventory, find_warehouse, reroute_order, issue_refund, update_crm]
+    - parameters: dict
+    - metadata: dict | null
+
+reward:
+  type: "dense"
+  range: [-1.0, 1.0]
+  terminal_bonus: 1.0
+  per_step: true
+
+graders:
+  - task_id: "order_tracking"
+    function: "env.graders:grade_task_1"
+    output_range: [0.0, 1.0]
+    deterministic: true
+  - task_id: "shipment_rerouting"
+    function: "env.graders:grade_task_2"
+    output_range: [0.0, 1.0]
+    deterministic: true
+  - task_id: "stockout_crisis"
+    function: "env.graders:grade_task_3"
+    output_range: [0.0, 1.0]
+    deterministic: true
+
+tools:
+  - name: get_tracking
+    description: "Retrieve real-time tracking info for an order."
+    parameters: {order_id: string}
+  - name: check_inventory
+    description: "Query inventory levels and warehouse availability."
+    parameters: {product_id: string}
+  - name: find_warehouse
+    description: "Locate optimal alternate warehouse for rerouting."
+    parameters: {location: string}
+  - name: reroute_order
+    description: "Reroute an order to a specified warehouse."
+    parameters: {order_id: string, warehouse_id: string}
+  - name: issue_refund
+    description: "Issue a full refund for an order when no resolution exists."
+    parameters: {order_id: string}
+  - name: update_crm
+    description: "Log a resolution note for the customer in the CRM system."
+    parameters: {order_id: string, message: string}
+
+deployment:
+  docker: true
+  dockerfile: "Dockerfile"
+  huggingface_spaces: true
+  entrypoint: "scripts/run_inference.py"
+  env_vars:
+    required:
+      - HF_TOKEN
+    optional:
+      - LH360_BASE_URL
+      - LH360_MODEL
+      - LH360_MAX_RETRIES
+      - LH360_TEMPERATURE
+
+validation:
+  command: "openenv validate"
+  expected_methods: [reset, step, state]
+  expected_tasks: [order_tracking, shipment_rerouting, stockout_crisis]
