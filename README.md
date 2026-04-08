@@ -3,10 +3,7 @@ title: LogisticsHub-360
 emoji: 📦
 colorFrom: blue
 colorTo: indigo
-sdk: gradio
-sdk_version: "5.0.0"
-python_version: "3.11"
-app_file: app.py
+sdk: docker
 pinned: false
 fullWidth: true
 short_description: AI benchmarking for real-world logistics ops
