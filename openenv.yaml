@@ -117,13 +117,13 @@ deployment:
   docker: true
   dockerfile: "Dockerfile"
   huggingface_spaces: true
-  entrypoint: "scripts/run_inference.py"
+  entrypoint: "inference.py"
   env_vars:
     required:
       - HF_TOKEN
     optional:
-      - LH360_BASE_URL
-      - LH360_MODEL
+      - API_BASE_URL
+      - MODEL_NAME
       - LH360_MAX_RETRIES
       - LH360_TEMPERATURE
 

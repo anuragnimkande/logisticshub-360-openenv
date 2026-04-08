@@ -44,13 +44,13 @@ logger = logging.getLogger("logisticshub360.inference")
 # Configuration
 # ---------------------------------------------------------------------------
 
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
-BASE_URL = os.environ.get(
-    "LH360_BASE_URL",
+HF_TOKEN = os.getenv("HF_TOKEN")
+API_BASE_URL = os.getenv(
+    "API_BASE_URL",
     "https://router.huggingface.co/v1",
 )
-MODEL_ID = os.environ.get(
-    "LH360_MODEL",
+MODEL_NAME = os.getenv(
+    "MODEL_NAME",
     "Qwen/Qwen2.5-72B-Instruct",
 )
 MAX_RETRIES = int(os.environ.get("LH360_MAX_RETRIES", "3"))
@@ -106,7 +106,7 @@ def create_client() -> OpenAI:
             "HF_TOKEN environment variable is not set. "
             "Export it before running this script."
         )
-    return OpenAI(base_url=BASE_URL, api_key=HF_TOKEN)
+    return OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
 
 
 def call_llm(
@@ -128,7 +128,7 @@ def call_llm(
     for attempt in range(1, retries + 1):
         try:
             response = client.chat.completions.create(
-                model=MODEL_ID,
+                model=MODEL_NAME,
                 messages=messages,  # type: ignore[arg-type]
                 temperature=TEMPERATURE,
                 max_tokens=MAX_TOKENS,
